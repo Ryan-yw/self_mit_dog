@@ -20,7 +20,7 @@ class SimulationBridge {
  public:
   explicit SimulationBridge(RobotType robot, RobotController* robot_ctrl) : 
     _robot(robot) {
-     _fakeTaskManager = new PeriodicTaskManager;
+    _fakeTaskManager = new PeriodicTaskManager;
     _robotRunner = new RobotRunner(robot_ctrl, _fakeTaskManager, 0, "robot-task");
     _userParams = robot_ctrl->getUserControlParameters();
 

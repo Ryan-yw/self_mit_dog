@@ -21,6 +21,29 @@ Quadruped<T> buildMiniCheetah() {
   Quadruped<T> cheetah;
   cheetah._robotType = RobotType::MINI_CHEETAH;
 
+    //自己修改的参数
+//   cheetah._bodyMass = 3.3;
+//     //影响机器人整体腿在空间的位置，脚在腿正下方
+//   cheetah._bodyLength = 0.19 * 2;
+//   cheetah._bodyWidth = 0.049 * 2;
+//   //不知道
+//   cheetah._bodyHeight = 0.05 * 2;
+//     //齿轮减速比
+//   cheetah._abadGearRatio = 6;
+//   cheetah._hipGearRatio = 6;
+//   cheetah._kneeGearRatio = 9.33;
+
+//   cheetah._abadLinkLength = 0.062; //脚在腿的内侧，髋关节移动
+//   cheetah._hipLinkLength = 0.309;  //大腿长
+//   //cheetah._kneeLinkLength = 0.175;
+//   //cheetah._maxLegLength = 0.384;
+//   cheetah._kneeLinkY_offset = 0.004;
+//   //cheetah._kneeLinkLength = 0.20;
+//   cheetah._kneeLinkLength = 0.295; //小腿长
+//   cheetah._maxLegLength = 0.409;
+
+
+    //原来的参数
   cheetah._bodyMass = 3.3;
   cheetah._bodyLength = 0.19 * 2;
   cheetah._bodyWidth = 0.049 * 2;
@@ -28,7 +51,7 @@ Quadruped<T> buildMiniCheetah() {
   cheetah._abadGearRatio = 6;
   cheetah._hipGearRatio = 6;
   cheetah._kneeGearRatio = 9.33;
-  cheetah._abadLinkLength = 0.062;
+  cheetah._abadLinkLength = 0.062; //腿坐标系
   cheetah._hipLinkLength = 0.209;
   //cheetah._kneeLinkLength = 0.175;
   //cheetah._maxLegLength = 0.384;
@@ -55,10 +78,8 @@ Quadruped<T> buildMiniCheetah() {
 
   Mat3<T> RY = coordinateRotation<T>(CoordinateAxis::Y, M_PI / 2);
   Mat3<T> RX = coordinateRotation<T>(CoordinateAxis::X, M_PI / 2);
-  Mat3<T> rotorRotationalInertiaX =
-      RY * rotorRotationalInertiaZ * RY.transpose();
-  Mat3<T> rotorRotationalInertiaY =
-      RX * rotorRotationalInertiaZ * RX.transpose();
+  Mat3<T> rotorRotationalInertiaX = RY * rotorRotationalInertiaZ * RY.transpose();
+  Mat3<T> rotorRotationalInertiaY = RX * rotorRotationalInertiaZ * RX.transpose();
 
   // spatial inertias
   Mat3<T> abadRotationalInertia;
@@ -101,8 +122,7 @@ Quadruped<T> buildMiniCheetah() {
 
   // locations
   cheetah._abadRotorLocation = Vec3<T>(0.125, 0.049, 0);
-  cheetah._abadLocation =
-      Vec3<T>(cheetah._bodyLength, cheetah._bodyWidth, 0) * 0.5;
+  cheetah._abadLocation = Vec3<T>(cheetah._bodyLength, cheetah._bodyWidth, 0) * 0.5;
   cheetah._hipLocation = Vec3<T>(0, cheetah._abadLinkLength, 0);
   cheetah._hipRotorLocation = Vec3<T>(0, 0.04, 0);
   cheetah._kneeLocation = Vec3<T>(0, 0, -cheetah._hipLinkLength);

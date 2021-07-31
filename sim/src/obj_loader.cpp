@@ -17,8 +17,7 @@
 #include <sstream>
 #include <array>
 
-void load_obj_file(std::string fileName, std::vector<float>& positions,
-                   std::vector<float>& normals) {
+void load_obj_file(std::string fileName, std::vector<float>& positions,std::vector<float>& normals) {
   std::ifstream file(fileName, std::ios_base::in);
   std::string line;
   std::vector<std::array<float, 3>> verts;

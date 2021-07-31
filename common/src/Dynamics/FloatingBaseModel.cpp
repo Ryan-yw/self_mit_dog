@@ -302,8 +302,7 @@ void FloatingBaseModel<T>::addBase(const SpatialInertia<T> &inertia) {
  * @param I    Rotational inertia of the floating body
  */
 template <typename T>
-void FloatingBaseModel<T>::addBase(T mass, const Vec3<T> &com,
-                                   const Mat3<T> &I) {
+void FloatingBaseModel<T>::addBase(T mass, const Vec3<T> &com,const Mat3<T> &I) {
   SpatialInertia<T> IS(mass, com, I);
   addBase(IS);
 }

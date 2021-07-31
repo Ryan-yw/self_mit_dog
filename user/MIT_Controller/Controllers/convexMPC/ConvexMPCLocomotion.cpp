@@ -80,7 +80,7 @@ void ConvexMPCLocomotion::_SetupCommand(ControlFSMData<float> & data){
   }
 
   float x_vel_cmd, y_vel_cmd;
-  float filter(0.1);
+  float filter(1);
   if(data.controlParameters->use_rc){
     const rc_control_settings* rc_cmd = data._desiredStateCommand->rcCommand;
     data.userParameters->cmpc_gait = rc_cmd->variable[0];
@@ -89,14 +89,25 @@ void ConvexMPCLocomotion::_SetupCommand(ControlFSMData<float> & data){
     y_vel_cmd = rc_cmd->v_des[1] * 0.5;
     _body_height += rc_cmd->height_variation * 0.08;
   }else{
+    
     _yaw_turn_rate = data._desiredStateCommand->rightAnalogStick[0];
     x_vel_cmd = data._desiredStateCommand->leftAnalogStick[1];
     y_vel_cmd = data._desiredStateCommand->leftAnalogStick[0];
+    
+    // std::cout << "x_vel_cmd " << x_vel_cmd << std::endl;
+    // std::cout << "y_vel_cmd " << y_vel_cmd << std::endl;
+    // std::cout << "yaw_turn_rate " << _yaw_turn_rate << std::endl;
   }
   _x_vel_des = _x_vel_des*(1-filter) + x_vel_cmd*filter;
   _y_vel_des = _y_vel_des*(1-filter) + y_vel_cmd*filter;
 
   _yaw_des = data._stateEstimator->getResult().rpy[2] + dt * _yaw_turn_rate;
+
+    
+    // std::cout << "_x_vel_des " << _x_vel_des << std::endl;
+    // std::cout << "_y_vel_des " << _y_vel_des << std::endl;
+    // std::cout << "_yaw_des " << _yaw_des << std::endl;
+    //std::cout << std::endl;
   _roll_des = 0.;
   _pitch_des = 0.;
 
@@ -106,19 +117,20 @@ template<>
 void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   bool omniMode = false;
 
-  // Command Setup
+  // Command Setup   //获得想x,y速度和yaw角度
   _SetupCommand(data);
-  gaitNumber = data.userParameters->cmpc_gait;
+  gaitNumber = data.userParameters->cmpc_gait;//从仿真器获得步态，默认为trot gaitNumber=9
+  //std::cout << "gait number" << gaitNumber << std::endl;
   if(gaitNumber >= 10) {
     gaitNumber -= 10;
     omniMode = true;
   }
 
-  auto& seResult = data._stateEstimator->getResult();
+  auto& seResult = data._stateEstimator->getResult();  //获得状态估计的值 估计出来返回的值是什么？
 
-  // Check if transition to standing
+  // Check if transition to standing    //如果是站立步态，设定站立参数，包括三维位置和三维转角   同时设定期望地面坐标系
   if(((gaitNumber == 4) && current_gait != 4) || firstRun)
-  {
+  { 
     stand_traj[0] = seResult.position[0];
     stand_traj[1] = seResult.position[1];
     stand_traj[2] = 0.21;
@@ -129,7 +141,7 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
     world_position_desired[1] = stand_traj[1];
   }
 
-  // pick gait
+  // pick gait   由仿真器输入cmpc_gait确定
   Gait* gait = &trotting;
   if(gaitNumber == 1)
     gait = &bounding;
@@ -152,7 +164,6 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   gait->setIterations(iterationsBetweenMPC, iterationCounter);
   jumping.setIterations(iterationsBetweenMPC, iterationCounter);
 
-
   jumping.setIterations(27/2, iterationCounter);
 
   //printf("[%d] [%d]\n", jumping.get_current_gait_phase(), gait->get_current_gait_phase());
@@ -164,12 +175,13 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   // bool too_high = seResult.position[2] > 0.29;
   // check jump action
   if(jump_state.should_jump(jumping.getCurrentGaitPhase())) {
+    std::cout << "jump......................" << std::endl; //没执行
     gait = &jumping;
     recompute_timing(27/2);
     _body_height = _body_height_jumping;
     currently_jumping = true;
 
-  } else {
+  } else {  // 默认执行这里
     recompute_timing(default_iterations_between_mpc);
     currently_jumping = false;
   }
@@ -186,7 +198,7 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
 
   //pretty_print(v_des_world, std::cout, "v des world");
 
-  //Integral-esque pitche and roll compensation
+  //Integral-esque pitch and roll compensation
   if(fabs(v_robot[0]) > .2)   //avoid dividing by zero
   {
     rpy_int[1] += dt*(_pitch_des - seResult.rpy[1])/v_robot[0];
@@ -332,7 +344,7 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
     }
   }
 #endif
-
+  //求足端轨迹
   for(int foot = 0; foot < 4; foot++)
   {
     float contactState = contactStates[foot];
@@ -444,26 +456,29 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   // se->set_contact_state(se_contactState); todo removed
   data._stateEstimator->setContactPhase(se_contactState);
 
-  // Update For WBC
+  // Update For WBC   相对地面坐标系的位置
   pBody_des[0] = world_position_desired[0];
   pBody_des[1] = world_position_desired[1];
   pBody_des[2] = _body_height;
-
+  
   vBody_des[0] = v_des_world[0];
   vBody_des[1] = v_des_world[1];
   vBody_des[2] = 0.;
-
+  
   aBody_des.setZero();
 
   pBody_RPY_des[0] = 0.;
   pBody_RPY_des[1] = 0.; 
   pBody_RPY_des[2] = _yaw_des;
-
+  
   vBody_Ori_des[0] = 0.;
   vBody_Ori_des[1] = 0.;
   vBody_Ori_des[2] = _yaw_turn_rate;
-
-  //contact_state = gait->getContactState();
+  std::cout << pBody_des[0] << " " << pBody_des[1] << " " << pBody_des[2] << std::endl; 
+  std::cout << vBody_des[0] << " " << vBody_des[1] << " " << vBody_des[2] << std::endl; 
+  std::cout << pBody_RPY_des[0] << " " << pBody_RPY_des[1] << " " << pBody_RPY_des[2] << std::endl; 
+  std::cout << vBody_Ori_des[0] << " " << vBody_Ori_des[1] << " " << vBody_Ori_des[2] << std::endl; 
+  std::cout << std::endl; 
   contact_state = gait->getContactState();
   // END of WBC Update
 

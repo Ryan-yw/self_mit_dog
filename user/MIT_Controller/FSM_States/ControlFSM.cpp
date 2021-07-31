@@ -95,7 +95,7 @@ void ControlFSM<T>::runFSM() {
 
   // Check the robot state for safe operation
   operatingMode = safetyPreCheck();
-
+  //std::cout<< "use_rc: "<<data.controlParameters->use_rc<<std::endl;
   if(data.controlParameters->use_rc){
     int rc_mode = data._desiredStateCommand->rcCommand->mode;
     if(rc_mode == RC_mode::RECOVERY_STAND){
@@ -169,7 +169,6 @@ void ControlFSM<T>::runFSM() {
       // Check the robot state for safe operation
       safetyPostCheck();
     }
-
   } else { // if ESTOP
     currentState = statesList.passive;
     currentState->onEnter();
@@ -295,8 +294,7 @@ void ControlFSM<T>::printInfo(int opt) {
       // Print at commanded frequency
       if (printIter == printNum) {
         std::cout << "[CONTROL FSM] Printing FSM Info...\n";
-        std::cout
-            << "---------------------------------------------------------\n";
+        std::cout << "---------------------------------------------------------\n";
         std::cout << "Iteration: " << iter << "\n";
         if (operatingMode == FSM_OperatingMode::NORMAL) {
           std::cout << "Operating Mode: NORMAL in " << currentState->stateString

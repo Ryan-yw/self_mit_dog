@@ -18,9 +18,7 @@
 #include "Controllers/PositionVelocityEstimator.h"
 //#include "rt/rt_interface_lcm.h"
 
-RobotRunner::RobotRunner(RobotController* robot_ctrl, 
-    PeriodicTaskManager* manager, 
-    float period, std::string name):
+RobotRunner::RobotRunner(RobotController* robot_ctrl, PeriodicTaskManager* manager, float period, std::string name):
   PeriodicTask(manager, period, name),
   _lcm(getLcmUrl(255)) {
 
@@ -47,19 +45,12 @@ void RobotRunner::init() {
 
   // Always initialize the leg controller and state entimator
   _legController = new LegController<float>(_quadruped);
-  _stateEstimator = new StateEstimatorContainer<float>(
-      cheaterState, vectorNavData, _legController->datas,
-      &_stateEstimate, controlParameters);
+  _stateEstimator = new StateEstimatorContainer<float>(cheaterState, vectorNavData, _legController->datas, &_stateEstimate, controlParameters);
   initializeStateEstimator(false);
 
   memset(&rc_control, 0, sizeof(rc_control_settings));
   // Initialize the DesiredStateCommand object
-  _desiredStateCommand =
-    new DesiredStateCommand<float>(driverCommand,
-        &rc_control,
-        controlParameters,
-        &_stateEstimate,
-        controlParameters->controller_dt);
+  _desiredStateCommand = new DesiredStateCommand<float>(driverCommand, &rc_control,controlParameters,&_stateEstimate,controlParameters->controller_dt);
 
   // Controller initializations
   _robot_ctrl->_model = &_model;
@@ -82,6 +73,7 @@ void RobotRunner::init() {
  * to run each of their respective steps.
  */
 void RobotRunner::run() {
+  
   // Run the state estimator step
   //_stateEstimator->run(cheetahMainVisualization);
   _stateEstimator->run();
@@ -101,7 +93,6 @@ void RobotRunner::run() {
     _legController->setEnabled(false);
   } else {
     _legController->setEnabled(true);
-
     if( (rc_control.mode == 0) && controlParameters->use_rc ) {
       if(count_ini%1000 ==0)   printf("ESTOP!\n");
       for (int leg = 0; leg < 4; leg++) {
@@ -109,7 +100,7 @@ void RobotRunner::run() {
       }
       _robot_ctrl->Estop();
     }else {
-      // Controller
+      // Controller    //执行一次
       if (!_jpos_initializer->IsInitialized(_legController)) {
         Mat3<float> kpMat;
         Mat3<float> kdMat;
@@ -128,17 +119,17 @@ void RobotRunner::run() {
           _legController->commands[leg].kpJoint = kpMat;
           _legController->commands[leg].kdJoint = kdMat;
         }
-      } else {
+      } else {   //循环
+
         // Run Control 
         _robot_ctrl->runController();
         cheetahMainVisualization->p = _stateEstimate.position;
 
         // Update Visualization
-        _robot_ctrl->updateVisualization();
+        _robot_ctrl->updateVisualization();   //空语句，没执行任何语句
         cheetahMainVisualization->p = _stateEstimate.position;
       }
     }
-
   }
 
 
@@ -209,6 +200,7 @@ void RobotRunner::finalizeStep() {
   } else {
     assert(false);
   }
+  
   _legController->setLcm(&leg_control_data_lcm, &leg_control_command_lcm);
   _stateEstimate.setLcm(state_estimator_lcm);
   _lcm.publish("leg_control_command", &leg_control_command_lcm);

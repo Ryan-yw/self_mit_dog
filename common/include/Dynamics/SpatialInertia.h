@@ -29,8 +29,7 @@ class SpatialInertia {
    */
   SpatialInertia(T mass, const Vec3<T>& com, const Mat3<T>& inertia) {
     Mat3<T> cSkew = vectorToSkewMat(com);
-    _inertia.template topLeftCorner<3, 3>() =
-        inertia + mass * cSkew * cSkew.transpose();
+    _inertia.template topLeftCorner<3, 3>() = inertia + mass * cSkew * cSkew.transpose();
     _inertia.template topRightCorner<3, 3>() = mass * cSkew;
     _inertia.template bottomLeftCorner<3, 3>() = mass * cSkew.transpose();
     _inertia.template bottomRightCorner<3, 3>() = mass * Mat3<T>::Identity();

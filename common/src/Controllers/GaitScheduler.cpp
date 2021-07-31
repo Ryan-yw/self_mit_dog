@@ -114,8 +114,7 @@ void GaitScheduler<T>::step() {
       }
 
       // Find each foot's current phase
-      gaitData.phaseVariable(foot) =
-        fmod((gaitData.phaseVariable(foot) + dphase), 1);
+      gaitData.phaseVariable(foot) = fmod((gaitData.phaseVariable(foot) + dphase), 1);
 
       // Check the current contact state
       if (gaitData.phaseVariable(foot) <= gaitData.switchingPhase(foot)) {

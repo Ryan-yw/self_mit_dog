@@ -40,7 +40,7 @@ struct CMPC_Jump {
     if(!pressed && trigger) {
       if(!jump_pending && !jump_in_progress) {
         jump_pending = true;
-        //printf("jump pending @ %d\n", seg);
+        printf("jump pending @ %d\n", seg);
       }
     }
     pressed = trigger;
@@ -52,7 +52,7 @@ struct CMPC_Jump {
     if(jump_pending && seg == START_SEG) {
       jump_pending = false;
       jump_in_progress = true;
-      //printf("jump begin @ %d\n", seg);
+      printf("jump begin @ %d\n", seg);
       seen_end_count = 0;
       last_seg_seen = seg;
       return true;
@@ -64,7 +64,7 @@ struct CMPC_Jump {
         if(seen_end_count == END_COUNT) {
           seen_end_count = 0;
           jump_in_progress = false;
-          //printf("jump end @ %d\n", seg);
+          printf("jump end @ %d\n", seg);
           last_seg_seen = seg;
           return false;
         }
@@ -90,6 +90,7 @@ public:
   void run(ControlFSMData<T>& data);
   bool currently_jumping = false;
 
+  //运动过程中的实时的运动状态值：包括平动，转动，脚和身体
   Vec3<float> pBody_des;
   Vec3<float> vBody_des;
   Vec3<float> aBody_des;
@@ -97,6 +98,7 @@ public:
   Vec3<float> pBody_RPY_des;
   Vec3<float> vBody_Ori_des;
 
+  //脚在移动过程中的位置，速度和加速度
   Vec3<float> pFoot_des[4];
   Vec3<float> vFoot_des[4];
   Vec3<float> aFoot_des[4];
@@ -108,18 +110,18 @@ public:
 private:
   void _SetupCommand(ControlFSMData<float> & data);
 
-  float _yaw_turn_rate;
-  float _yaw_des;
+  float _yaw_turn_rate; //旋转频率
+  float _yaw_des; //旋转角度-3.14——3.14
 
-  float _roll_des;
-  float _pitch_des;
+  float _roll_des;  //0
+  float _pitch_des; //0
 
-  float _x_vel_des = 0.;
-  float _y_vel_des = 0.;
+  float _x_vel_des = 0.; //x方向期望速度    
+  float _y_vel_des = 0.; //y方向期望速度
 
   // High speed running
   //float _body_height = 0.34;
-  float _body_height = 0.29;
+  float _body_height = 0.29; //身体高
 
   float _body_height_running = 0.29;
   float _body_height_jumping = 0.36;
@@ -152,7 +154,7 @@ private:
   Vec3<float> rpy_int;
   Vec3<float> rpy_comp;
   float x_comp_integral = 0;
-  Vec3<float> pFoot[4];
+  Vec3<float> pFoot[4];  //落脚点
   CMPC_Result<float> result;
   float trajAll[12*36];
 

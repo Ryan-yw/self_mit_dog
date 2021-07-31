@@ -69,10 +69,8 @@ class Quadruped {
   T _motorKT, _motorR, _batteryV;
   T _motorTauMax;
   T _jointDamping, _jointDryFriction;
-  SpatialInertia<T> _abadInertia, _hipInertia, _kneeInertia, _abadRotorInertia,
-      _hipRotorInertia, _kneeRotorInertia, _bodyInertia;
-  Vec3<T> _abadLocation, _abadRotorLocation, _hipLocation, _hipRotorLocation,
-      _kneeLocation, _kneeRotorLocation;
+  SpatialInertia<T> _abadInertia, _hipInertia, _kneeInertia, _abadRotorInertia,_hipRotorInertia, _kneeRotorInertia, _bodyInertia;
+  Vec3<T> _abadLocation, _abadRotorLocation, _hipLocation, _hipRotorLocation,_kneeLocation, _kneeRotorLocation;
   FloatingBaseModel<T> buildModel();
   bool buildModel(FloatingBaseModel<T>& model);
   std::vector<ActuatorModel<T>> buildActuatorModels();

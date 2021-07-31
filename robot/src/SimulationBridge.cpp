@@ -29,7 +29,7 @@ void SimulationBridge::run() {
       // wait for our turn to access the shared memory
       // on the first loop, this gives the simulator a chance to put stuff in
       // shared memory before we start
-      _sharedMemory().waitForSimulator();
+      _sharedMemory().waitForSimulator();  //等待从仿真器返回控制数据 运行模式
 
       if (firstRun) {
         firstRun = false;
@@ -42,18 +42,19 @@ void SimulationBridge::run() {
           throw std::runtime_error("robot mismatch!");
         }
       }
-
       // the simulator tells us which mode to run in
-      _simMode = _sharedMemory().simToRobot.mode;
+      _simMode = _sharedMemory().simToRobot.mode;  //仿真器控制界面control_mode修改导致_simMode变化
       switch (_simMode) {
         case SimulatorMode::RUN_CONTROL_PARAMETERS:  // there is a new control
-          // parameter request
+          // parameter request            // 在仿真器改变参数（control_mode）的时候调用  
           handleControlParameters();
+          //std::cout <<"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"<<std::endl;
           break;
         case SimulatorMode::RUN_CONTROLLER:  // the simulator is ready for the
           // next robot controller run
-          _iterations++;
+          _iterations++; //没啥用
           runRobotControl();
+          //std::cout <<"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"<<std::endl;
           break;
         case SimulatorMode::DO_NOTHING:  // the simulator is just checking to see
           // if we are alive yet
@@ -230,22 +231,20 @@ void SimulationBridge::runRobotControl() {
     }
 
 
-    _robotRunner->driverCommand =
-        &_sharedMemory().simToRobot.gamepadCommand;
-    _robotRunner->spiData = &_sharedMemory().simToRobot.spiData;
-    _robotRunner->tiBoardData = _sharedMemory().simToRobot.tiBoardData;
-    _robotRunner->robotType = _robot;
-    _robotRunner->vectorNavData = &_sharedMemory().simToRobot.vectorNav;
-    _robotRunner->cheaterState = &_sharedMemory().simToRobot.cheaterState;
-    _robotRunner->spiCommand = &_sharedMemory().robotToSim.spiCommand;
-    _robotRunner->tiBoardCommand =
-        _sharedMemory().robotToSim.tiBoardCommand;
-    _robotRunner->controlParameters = &_robotParams;
-    _robotRunner->visualizationData =
-        &_sharedMemory().robotToSim.visualizationData;
-    _robotRunner->cheetahMainVisualization =
-        &_sharedMemory().robotToSim.mainCheetahVisualization;
+    _robotRunner->driverCommand            = &_sharedMemory().simToRobot.gamepadCommand;
+    _robotRunner->spiData                  = &_sharedMemory().simToRobot.spiData;
+    _robotRunner->tiBoardData              =  _sharedMemory().simToRobot.tiBoardData;
+    _robotRunner->vectorNavData            = &_sharedMemory().simToRobot.vectorNav;
+    _robotRunner->cheaterState             = &_sharedMemory().simToRobot.cheaterState;
 
+    _robotRunner->spiCommand               = &_sharedMemory().robotToSim.spiCommand;
+    _robotRunner->tiBoardCommand           =  _sharedMemory().robotToSim.tiBoardCommand;
+    _robotRunner->visualizationData        = &_sharedMemory().robotToSim.visualizationData;
+    _robotRunner->cheetahMainVisualization = &_sharedMemory().robotToSim.mainCheetahVisualization;
+
+    _robotRunner->robotType = _robot;
+    _robotRunner->controlParameters = &_robotParams;
+    
     _robotRunner->init();
     _firstControllerRun = false;
 
@@ -259,6 +258,9 @@ void SimulationBridge::runRobotControl() {
  */
 void SimulationBridge::run_sbus() {
   printf("[run_sbus] starting...\n");
+
+  //std::cout << "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq" << std::endl;
+
   int port = init_sbus(true);  // Simulation
   while (true) {
     if (port > 0) {

@@ -169,7 +169,7 @@ int init_sbus(int is_simulator) {
   } else {
     init_serial_for_sbus(fd1, 100000);
 #ifdef linux
-    //set_interface_attribs_custom_baud(fd1, 100000, 0, 0);
+    set_interface_attribs_custom_baud(fd1, 100000, 0, 0);
 #endif
   }
   return fd1;
