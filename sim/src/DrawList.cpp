@@ -15,12 +15,22 @@ void DrawList::loadFiles() {
       "mini_body.obj",       "mini_abad.obj",
       "mini_upper_link.obj", "mini_lower_link.obj",
       "sphere.obj",          "cube.obj"};
+
+  //Aliengo
+    // std::vector<std::string> names = {
+    //   "c3_body.obj",         "mini_abad.obj",
+    //   "c3_upper_link.obj",   "c3_lower_link.obj",
+    //   "trunk.obj",           "hip.obj",
+    //   "thing.obj",           "calf.obj",
+    //   "sphere.obj",          "cube.obj"};
+      
   for (const auto& name : names) {
     std::string filename = _baseFileName + name;
     _vertexData.emplace_back();
     _normalData.emplace_back();
     _colorData.emplace_back();
     load_obj_file(filename, _vertexData.back(), _normalData.back());
+    std::cout << "111111111111111111111" << std::endl;
     if (name == "sphere.obj") {
       setSolidColor(_colorData.back(), _vertexData.back().size(),
                     debugRedColor[0], debugRedColor[1], debugRedColor[2]);

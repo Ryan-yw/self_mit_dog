@@ -137,8 +137,7 @@ void RobotRunner::run() {
   // Visualization (will make this into a separate function later)
   for (int leg = 0; leg < 4; leg++) {
     for (int joint = 0; joint < 3; joint++) {
-      cheetahMainVisualization->q[leg * 3 + joint] =
-        _legController->datas[leg].q[joint];
+      cheetahMainVisualization->q[leg * 3 + joint] = _legController->datas[leg].q[joint];
     }
   }
   cheetahMainVisualization->p.setZero();

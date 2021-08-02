@@ -137,10 +137,8 @@ void LegController<T>::updateCommand(SpiCommand* spiCommand) {
     Vec3<T> footForce = commands[leg].forceFeedForward;
 
     // cartesian PD
-    footForce +=
-        commands[leg].kpCartesian * (commands[leg].pDes - datas[leg].p);
-    footForce +=
-        commands[leg].kdCartesian * (commands[leg].vDes - datas[leg].v);
+    footForce += commands[leg].kpCartesian * (commands[leg].pDes - datas[leg].p);
+    footForce += commands[leg].kdCartesian * (commands[leg].vDes - datas[leg].v);
 
     // Torque
     legTorque += datas[leg].J.transpose() * footForce;
@@ -262,8 +260,7 @@ template class LegController<float>;
  * leg coordinate system. If J/p are NULL, the calculation will be skipped.
  */
 template <typename T>
-void computeLegJacobianAndPosition(Quadruped<T>& quad, Vec3<T>& q, Mat3<T>* J,
-                                   Vec3<T>* p, int leg) {
+void computeLegJacobianAndPosition(Quadruped<T>& quad, Vec3<T>& q, Mat3<T>* J, Vec3<T>* p, int leg) {
   T l1 = quad._abadLinkLength;
   T l2 = quad._hipLinkLength;
   T l3 = quad._kneeLinkLength;
@@ -300,11 +297,5 @@ void computeLegJacobianAndPosition(Quadruped<T>& quad, Vec3<T>& q, Mat3<T>* J,
   }
 }
 
-template void computeLegJacobianAndPosition<double>(Quadruped<double>& quad,
-                                                    Vec3<double>& q,
-                                                    Mat3<double>* J,
-                                                    Vec3<double>* p, int leg);
-template void computeLegJacobianAndPosition<float>(Quadruped<float>& quad,
-                                                   Vec3<float>& q,
-                                                   Mat3<float>* J,
-                                                   Vec3<float>* p, int leg);
+template void computeLegJacobianAndPosition<double>(Quadruped<double>& quad, Vec3<double>& q, Mat3<double>* J,Vec3<double>* p, int leg);
+template void computeLegJacobianAndPosition<float>(Quadruped<float>& quad, Vec3<float>& q, Mat3<float>* J,Vec3<float>* p, int leg);

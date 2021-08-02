@@ -356,8 +356,7 @@ int FloatingBaseModel<T>::addGroundContactPoint(int bodyID,
  * centered around the origin of the body coordinate system and is axis aligned.
  */
 template <typename T>
-void FloatingBaseModel<T>::addGroundContactBoxPoints(int bodyId,
-                                                     const Vec3<T> &dims) {
+void FloatingBaseModel<T>::addGroundContactBoxPoints(int bodyId,const Vec3<T> &dims) {
    addGroundContactPoint(bodyId, Vec3<T>( dims(0),  dims(1),  dims(2))/2);
    addGroundContactPoint(bodyId, Vec3<T>(-dims(0),  dims(1),  dims(2))/2);
    addGroundContactPoint(bodyId, Vec3<T>( dims(0), -dims(1),  dims(2))/2);

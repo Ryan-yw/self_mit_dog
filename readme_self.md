@@ -38,3 +38,25 @@ find_package(Qt5Gui CONFIG REQUIRED)
 # 可能存在的问题：找不到 liblsm.so.1 
  sudo cp /usr/local/lib/liblcm.* .
 
+# 实习任务
+运动控制算法
+
+1. 完成MIT开源代码的安装和使用；
+2. 添加Aliengo到MIT开源代码中；
+3. 完成仿真环境下的斜坡估计代码的加入；https://www.youtube.com/watch?v=gZKRE9yvzgw
+4. 完成楼梯的识别，以及相对位置关系的建立；https://www.youtube.com/watch?v=CpzQu25iLa0
+5. 完成人体跟随的任务；
+6. 调研四足上楼梯的方案与方法；
+
+
+# 论文
+1. A Low Cost Modular Actuator for Dynamic Robots【有github网址】
+2. Design of a High Torque Density Modular Actuator for Dynamic Robots
+3. MIT Cheetah 3: Design and Control of a Robust, Dynamic Quadruped Robot
+4. Software and Control Design for the MIT Cheetah Quadruped Robots
+5. High-slope Terrain Locomotion for Torque-Controlled Quadruped Robots
+6. Optimization-based motion planning for legged robots
+7. Highly Dynamic Quadruped Locomotion via Whole-Body Impulse Control and Model Predictive Control
+8. Regularized Predictive Control Framework for Robust Dynamic Legged Locomotion
+9. Optimized Jumping on the MIT Cheetah 3 Robot
+10. Dynamic Locomotion in the MIT Cheetah 3 Through Convex Model-Predictive Control

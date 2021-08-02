@@ -82,10 +82,8 @@ void SimulationBridge::run() {
  * This function handles a a control parameter message from the simulator
  */
 void SimulationBridge::handleControlParameters() {
-  ControlParameterRequest& request =
-      _sharedMemory().simToRobot.controlParameterRequest;
-  ControlParameterResponse& response =
-      _sharedMemory().robotToSim.controlParameterResponse;
+  ControlParameterRequest& request = _sharedMemory().simToRobot.controlParameterRequest;
+  ControlParameterResponse& response = _sharedMemory().robotToSim.controlParameterResponse;
   if (request.requestNumber <= response.requestNumber) {
     // nothing to do!
     printf(
@@ -98,8 +96,7 @@ void SimulationBridge::handleControlParameters() {
   u64 nRequests = request.requestNumber - response.requestNumber;
   assert(nRequests == 1);
 
-  response.nParameters = _robotParams.collection._map
-                             .size();  // todo don't do this every single time?
+  response.nParameters = _robotParams.collection._map.size();  // todo don't do this every single time?
 
   switch (request.requestKind) {
     case ControlParameterRequestKind::SET_ROBOT_PARAM_BY_NAME: {
