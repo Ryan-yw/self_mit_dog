@@ -22,17 +22,21 @@
 template <typename T>
 struct StateEstimate {
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  Vec4<T> contactEstimate;
-  Vec3<T> position;
-  Vec3<T> vBody;
-  Quat<T> orientation;
-  Vec3<T> omegaBody;
-  RotMat<T> rBody;
-  Vec3<T> rpy;
+  Vec4<T> contactEstimate; //判断脚是否触底 0->1
 
-  Vec3<T> omegaWorld;
-  Vec3<T> vWorld;
-  Vec3<T> aBody, aWorld;
+  Vec3<T> position;        //身体相对地面坐标系零点的绝对位置
+  RotMat<T> rBody;         //地面相对身体的旋转矩阵
+  Vec3<T> rpy;             //roll pitch yaw 身体相对地面坐标系
+  Quat<T> orientation;     //身体姿态四元素
+
+  Vec3<T> vBody;           //在身体坐标系下的速度，该坐标系始终与身体位置和姿态一直。前进方向为x,左为y,上为z
+  Vec3<T> vWorld;          //在世界坐标系下的速度，世界坐标系，该坐标系是不会变化的。开始时身体坐标系与世界坐标系重合   
+  Vec3<T> omegaBody;       //身体坐标系下的角速度
+  Vec3<T> omegaWorld;      //世界坐标系下的角速度
+  
+  Vec3<T> aBody, aWorld;  //加速度
+
+
 
   void setLcm(state_estimator_lcmt& lcm_data) {
     for(int i = 0; i < 3; i++) {

@@ -41,10 +41,9 @@ bool Quadruped<T>::buildModel(FloatingBaseModel<T>& model) {
     //  rotorInertia, T gearRatio,
     //              int parent, JointType jointType, CoordinateAxis jointAxis,
     //              const Mat6<T>& Xtree, const Mat6<T>& Xrot);
-    bodyID++;
+    bodyID++;  //=6 9 12 15
     Mat6<T> xtreeAbad = createSXform(I3, withLegSigns<T>(_abadLocation, legID));
-    Mat6<T> xtreeAbadRotor =
-        createSXform(I3, withLegSigns<T>(_abadRotorLocation, legID));
+    Mat6<T> xtreeAbadRotor = createSXform(I3, withLegSigns<T>(_abadRotorLocation, legID));
 
     if (sideSign < 0) {
       model.addBody(_abadInertia.flipAlongAxis(CoordinateAxis::Y),
@@ -58,13 +57,9 @@ bool Quadruped<T>::buildModel(FloatingBaseModel<T>& model) {
     }
 
     // Hip Joint
-    bodyID++;
-    Mat6<T> xtreeHip =
-        createSXform(coordinateRotation<T>(CoordinateAxis::Z, T(M_PI)),
-                     withLegSigns<T>(_hipLocation, legID));
-    Mat6<T> xtreeHipRotor =
-        createSXform(coordinateRotation<T>(CoordinateAxis::Z, T(M_PI)),
-                     withLegSigns<T>(_hipRotorLocation, legID));
+    bodyID++; //=7 10 13 16
+    Mat6<T> xtreeHip = createSXform(coordinateRotation<T>(CoordinateAxis::Z, T(M_PI)), withLegSigns<T>(_hipLocation, legID));
+    Mat6<T> xtreeHipRotor = createSXform(coordinateRotation<T>(CoordinateAxis::Z, T(M_PI)),withLegSigns<T>(_hipRotorLocation, legID));
     if (sideSign < 0) {
       model.addBody(_hipInertia.flipAlongAxis(CoordinateAxis::Y),
                     _hipRotorInertia.flipAlongAxis(CoordinateAxis::Y),
@@ -77,10 +72,10 @@ bool Quadruped<T>::buildModel(FloatingBaseModel<T>& model) {
     }
 
     // add knee ground contact point
-    model.addGroundContactPoint(bodyID, Vec3<T>(0, 0, -_hipLinkLength));
+    model.addGroundContactPoint(bodyID, Vec3<T>(0, 0, -_hipLinkLength));  
 
     // Knee Joint
-    bodyID++;
+    bodyID++; //=8 11 14 17
     Mat6<T> xtreeKnee = createSXform(I3, _kneeLocation);
     Mat6<T> xtreeKneeRotor = createSXform(I3, _kneeRotorLocation);
     if (sideSign < 0) {
@@ -91,19 +86,16 @@ bool Quadruped<T>::buildModel(FloatingBaseModel<T>& model) {
 
       model.addGroundContactPoint(bodyID, Vec3<T>(0, _kneeLinkY_offset, -_kneeLinkLength), true);
     } else {
-      model.addBody(_kneeInertia, _kneeRotorInertia, _kneeGearRatio, bodyID - 1,
-                    JointType::Revolute, CoordinateAxis::Y, xtreeKnee,
-                    xtreeKneeRotor);
-
+      model.addBody(_kneeInertia, _kneeRotorInertia, _kneeGearRatio, bodyID - 1,JointType::Revolute, CoordinateAxis::Y, xtreeKnee,xtreeKneeRotor);
       model.addGroundContactPoint(bodyID, Vec3<T>(0, -_kneeLinkY_offset, -_kneeLinkLength), true);
     }
 
     // add foot
     //model.addGroundContactPoint(bodyID, Vec3<T>(0, 0, -_kneeLinkLength), true);
-
+    
     sideSign *= -1;
   }
-
+std::cout << "bodyID=" << bodyID << " " << "nGroundContact=" << model._nGroundContact << "parent=" << model._parents.size() << std::endl;  
   Vec3<T> g(0, 0, -9.81);
   model.setGravity(g);
 

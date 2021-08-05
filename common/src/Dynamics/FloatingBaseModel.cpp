@@ -315,9 +315,7 @@ void FloatingBaseModel<T>::addBase(T mass, const Vec3<T> &com,const Mat3<T> &I) 
  * @return The ID of the ground contact point
  */
 template <typename T>
-int FloatingBaseModel<T>::addGroundContactPoint(int bodyID,
-                                                const Vec3<T> &location,
-                                                bool isFoot) {
+int FloatingBaseModel<T>::addGroundContactPoint(int bodyID,const Vec3<T> &location, bool isFoot) {
   if ((size_t)bodyID >= _nDof) {
     throw std::runtime_error(
         "addGroundContactPoint got invalid bodyID: " + std::to_string(bodyID) +

@@ -32,13 +32,13 @@ ground-plane:
 
 box-1:
     type: "box"
-    mu: 0.7
+    mu: 1
     restitution: 0
-    depth: 2.0
-    width: 1.5
+    depth: 5.0
+    width: 5
     height: .3
-    position:  [1.5, 0, 0.23]
-    orientation: [0,-0.35,0]  # roll pitch yaw
+    position:  [3.5, 0, 0.13]
+    orientation: [0,-0.15,0]  # roll pitch yaw
     transparent: 1
 
 # box-2:

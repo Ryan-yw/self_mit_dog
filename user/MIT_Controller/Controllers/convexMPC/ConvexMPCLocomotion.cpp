@@ -5,8 +5,10 @@
 #include "ConvexMPCLocomotion.h"
 #include "convexMPC_interface.h"
 #include "../../../../common/FootstepPlanner/GraphSearch.h"
-
+#include <eigen3/Eigen/Dense>
 #include "Gait.h"
+
+#include "SlopeEstimation.h"
 
 //#define DRAW_DEBUG_SWINGS
 //#define DRAW_DEBUG_PATH
@@ -126,7 +128,9 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
     omniMode = true;
   }
 
-  auto& seResult = data._stateEstimator->getResult();  //获得状态估计的值 估计出来返回的值是什么？
+  auto& seResult = data._stateEstimator->getResult();  //获得状态估计的值
+
+  //printEstimationParam(seResult);//打印状态估计的值
 
   // Check if transition to standing    //如果是站立步态，设定站立参数，包括三维位置和三维转角   同时设定期望地面坐标系
   if(((gaitNumber == 4) && current_gait != 4) || firstRun)
@@ -195,6 +199,7 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   Vec3<float> v_des_world = omniMode ? v_des_robot : seResult.rBody.transpose() * v_des_robot;
   Vec3<float> v_robot = seResult.vWorld;
 
+
   //pretty_print(v_des_world, std::cout, "v des world");
 
   //Integral-esque pitch and roll compensation
@@ -211,12 +216,14 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   rpy_int[1] = fminf(fmaxf(rpy_int[1], -.25), .25);
   rpy_comp[1] = v_robot[0] * rpy_int[1];
   rpy_comp[0] = v_robot[1] * rpy_int[0] * (gaitNumber!=8);  //turn off for pronking
-
-
+   
   for(int i = 0; i < 4; i++) {
-    pFoot[i] = seResult.position + 
-      seResult.rBody.transpose() * (data._quadruped->getHipLocation(i) + 
-          data._legController->datas[i].p);
+    //求当前时刻足在世界坐标系下的表达  如果接触地面则作为下一步的初始点
+    pFoot[i] = seResult.position +                                                //任意时刻身体在世界坐标系下的表达
+               seResult.rBody.transpose() * (data._quadruped->getHipLocation(i) + //hip 在地面坐标系下的表达（不含位移，假设身体在世界坐标系初始位置）
+               data._legController->datas[i].p);                                  //足在机器人hip 坐标系下的表达
+    //std::cout << "foot_in_leg_frame" << i << "\n" << data._legController->datas[i].p << std::endl;
+    //std::cout << "pFoot" << i << ":" << pFoot[i][0] << "  " << pFoot[i][1] << " " << pFoot[i][2] << std::endl;
   }
 
   if(gait != &standing) {
@@ -269,7 +276,7 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
     pRobotFrame[1] += interleave_y[i] * v_abs * interleave_gain;
     float stance_time = gait->getCurrentStanceTime(dtMPC, i);
     Vec3<float> pYawCorrected = 
-      coordinateRotation(CoordinateAxis::Z, -_yaw_turn_rate* stance_time / 2) * pRobotFrame;
+    coordinateRotation(CoordinateAxis::Z, -_yaw_turn_rate* stance_time / 2) * pRobotFrame;
 
 
     Vec3<float> des_vel;
@@ -343,7 +350,7 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
     }
   }
 #endif
-  //求足端轨迹
+  //规划下一时刻足端轨迹
   for(int foot = 0; foot < 4; foot++)
   {
     float contactState = contactStates[foot];
@@ -455,6 +462,8 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   // se->set_contact_state(se_contactState); todo removed
   data._stateEstimator->setContactPhase(se_contactState);
 
+
+
   // Update For WBC   相对地面坐标系的位置
   pBody_des[0] = world_position_desired[0];
   pBody_des[1] = world_position_desired[1];
@@ -466,18 +475,21 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   
   aBody_des.setZero();
 
-  pBody_RPY_des[0] = 0.;
-  pBody_RPY_des[1] = 0.; 
+  slope_angle.computeSlope(pFoot,_yaw_des);
+  pBody_RPY_des[0] = slope_angle.roll;
+  pBody_RPY_des[1] = slope_angle.pitch;
   pBody_RPY_des[2] = _yaw_des;
+
   
   vBody_Ori_des[0] = 0.;
   vBody_Ori_des[1] = 0.;
   vBody_Ori_des[2] = _yaw_turn_rate;
-  std::cout << pBody_des[0] << " " << pBody_des[1] << " " << pBody_des[2] << std::endl; 
-  std::cout << vBody_des[0] << " " << vBody_des[1] << " " << vBody_des[2] << std::endl; 
-  std::cout << pBody_RPY_des[0] << " " << pBody_RPY_des[1] << " " << pBody_RPY_des[2] << std::endl; 
-  std::cout << vBody_Ori_des[0] << " " << vBody_Ori_des[1] << " " << vBody_Ori_des[2] << std::endl; 
-  std::cout << std::endl; 
+  //std::cout << "身体参数" << std::endl; 
+  // std::cout << "身体位置" << pBody_des[0] << " " << pBody_des[1] << " " << pBody_des[2] << std::endl; 
+  // std::cout << "身体速度" << vBody_des[0] << " " << vBody_des[1] << " " << vBody_des[2] << std::endl; 
+  std::cout << "身体角度" << pBody_RPY_des[0] << " " << pBody_RPY_des[1] << " " << pBody_RPY_des[2] << std::endl; 
+  // std::cout << "身体角速度" << vBody_Ori_des[0] << " " << vBody_Ori_des[1] << " " << vBody_Ori_des[2] << std::endl; 
+  // std::cout << std::endl; 
   contact_state = gait->getContactState();
   // END of WBC Update
 
@@ -715,4 +727,3 @@ void ConvexMPCLocomotion::initSparseMPC() {
 
   _sparseTrajectory.resize(horizonLength);
 }
-

@@ -30,7 +30,6 @@ void DrawList::loadFiles() {
     _normalData.emplace_back();
     _colorData.emplace_back();
     load_obj_file(filename, _vertexData.back(), _normalData.back());
-    std::cout << "111111111111111111111" << std::endl;
     if (name == "sphere.obj") {
       setSolidColor(_colorData.back(), _vertexData.back().size(),
                     debugRedColor[0], debugRedColor[1], debugRedColor[2]);

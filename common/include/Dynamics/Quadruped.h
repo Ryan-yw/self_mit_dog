@@ -73,7 +73,7 @@ class Quadruped {
   Vec3<T> _abadLocation, _abadRotorLocation, _hipLocation, _hipRotorLocation,_kneeLocation, _kneeRotorLocation;
   FloatingBaseModel<T> buildModel();
   bool buildModel(FloatingBaseModel<T>& model);
-  std::vector<ActuatorModel<T>> buildActuatorModels();
+  std::vector<ActuatorModel<T>> buildActuatorModels(); //sim调用
 
   /*!
    * Get if the i-th leg is on the left (+) or right (-) of the robot.

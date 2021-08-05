@@ -135,12 +135,9 @@ auto homogeneousToSXform(const Eigen::MatrixBase<T>& H) {
  * Create spatial coordinate transformation from rotation and translation
  */
 template <typename T, typename T2>
-auto createSXform(const Eigen::MatrixBase<T>& R,
-                  const Eigen::MatrixBase<T2>& r) {
-  static_assert(T::ColsAtCompileTime == 3 && T::RowsAtCompileTime == 3,
-                "Must have 3x3 matrix");
-  static_assert(T2::ColsAtCompileTime == 1 && T2::RowsAtCompileTime == 3,
-                "Must have 3x1 matrix");
+auto createSXform(const Eigen::MatrixBase<T>& R,const Eigen::MatrixBase<T2>& r) {
+  static_assert(T::ColsAtCompileTime == 3 && T::RowsAtCompileTime == 3,"Must have 3x3 matrix");
+  static_assert(T2::ColsAtCompileTime == 1 && T2::RowsAtCompileTime == 3,"Must have 3x1 matrix");
   Mat6<typename T::Scalar> X = Mat6<typename T::Scalar>::Zero();
   X.template topLeftCorner<3, 3>() = R;
   X.template bottomRightCorner<3, 3>() = R;

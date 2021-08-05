@@ -263,7 +263,7 @@ void FSM_State_Locomotion<T>::LocomotionControlStep() {
   }
 
   if(this->_data->userParameters->use_wbc > 0.9){
-    std::cout << "use_wbc" <<std::endl;
+    //std::cout << "use_wbc" <<std::endl;
     _wbc_data->pBody_des = cMPCOld->pBody_des;
     _wbc_data->vBody_des = cMPCOld->vBody_des;
     _wbc_data->aBody_des = cMPCOld->aBody_des;

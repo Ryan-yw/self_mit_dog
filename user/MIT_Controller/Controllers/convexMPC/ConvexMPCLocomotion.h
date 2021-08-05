@@ -8,7 +8,7 @@
 #include "Gait.h"
 
 #include <cstdio>
-
+#include "SlopeEstimation.h"
 using Eigen::Array4f;
 using Eigen::Array4i;
 
@@ -154,7 +154,7 @@ private:
   Vec3<float> rpy_int;
   Vec3<float> rpy_comp;
   float x_comp_integral = 0;
-  Vec3<float> pFoot[4];  //落脚点
+  Vec3<float> pFoot[4];  //任意时刻下足在世界坐标系下的表达
   CMPC_Result<float> result;
   float trajAll[12*36];
 
@@ -164,6 +164,8 @@ private:
   vectorAligned<Vec12<double>> _sparseTrajectory;
 
   SparseCMPC _sparseCMPC;
+
+  Slope slope_angle;
 
 };
 

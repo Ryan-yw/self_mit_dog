@@ -48,25 +48,28 @@ Quadruped<T> buildMiniCheetah() {
   cheetah._bodyLength = 0.19 * 2;
   cheetah._bodyWidth = 0.049 * 2;
   cheetah._bodyHeight = 0.05 * 2;
+
   cheetah._abadGearRatio = 6;
   cheetah._hipGearRatio = 6;
   cheetah._kneeGearRatio = 9.33;
-  cheetah._abadLinkLength = 0.062; //腿坐标系
+
+  cheetah._abadLinkLength = 0.062; //决定腿坐标系
   cheetah._hipLinkLength = 0.209;
+  cheetah._kneeLinkLength = 0.195;
+
   //cheetah._kneeLinkLength = 0.175;
   //cheetah._maxLegLength = 0.384;
-  cheetah._kneeLinkY_offset = 0.004;
   //cheetah._kneeLinkLength = 0.20;
-  cheetah._kneeLinkLength = 0.195;
+  cheetah._kneeLinkY_offset = 0.004;
   cheetah._maxLegLength = 0.409;
 
 
   cheetah._motorTauMax = 3.f;
   cheetah._batteryV = 24;
-  cheetah._motorKT = .05;  // this is flux linkage * pole pairs
+  cheetah._motorKT = 0.05;  // this is flux linkage * pole pairs
   cheetah._motorR = 0.173;
-  cheetah._jointDamping = .01;
-  cheetah._jointDryFriction = .2;
+  cheetah._jointDamping = 0.01;
+  cheetah._jointDryFriction = 0.2;
   //cheetah._jointDamping = .0;
   //cheetah._jointDryFriction = .0;
 
@@ -121,11 +124,13 @@ Quadruped<T> buildMiniCheetah() {
   cheetah._bodyInertia = bodyInertia;
 
   // locations
-  cheetah._abadRotorLocation = Vec3<T>(0.125, 0.049, 0);
+  
   cheetah._abadLocation = Vec3<T>(cheetah._bodyLength, cheetah._bodyWidth, 0) * 0.5;
   cheetah._hipLocation = Vec3<T>(0, cheetah._abadLinkLength, 0);
-  cheetah._hipRotorLocation = Vec3<T>(0, 0.04, 0);
   cheetah._kneeLocation = Vec3<T>(0, 0, -cheetah._hipLinkLength);
+
+  cheetah._abadRotorLocation = Vec3<T>(0.125, 0.049, 0);
+  cheetah._hipRotorLocation = Vec3<T>(0, 0.04, 0);
   cheetah._kneeRotorLocation = Vec3<T>(0, 0, 0);
 
   return cheetah;

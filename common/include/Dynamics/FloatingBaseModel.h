@@ -104,8 +104,7 @@ class FloatingBaseModel {
    * Get vector of body spatial inertias
    * @return Vector of body spatial inertias
    */
-  const std::vector<SpatialInertia<T>,
-                    Eigen::aligned_allocator<SpatialInertia<T>>>&
+  const std::vector<SpatialInertia<T>,Eigen::aligned_allocator<SpatialInertia<T>>>&
   getBodyInertiaVector() {
     return _Ibody;
   }
@@ -114,8 +113,7 @@ class FloatingBaseModel {
    * Get vector of rotor spatial inertias
    * @return Vector of rotor spatial inertias
    */
-  const std::vector<SpatialInertia<T>,
-                    Eigen::aligned_allocator<SpatialInertia<T>>>&
+  const std::vector<SpatialInertia<T>,Eigen::aligned_allocator<SpatialInertia<T>>>&
   getRotorInertiaVector() {
     return _Irot;
   }
@@ -134,15 +132,12 @@ class FloatingBaseModel {
     _compute_contact_info[gc_index] = flag;
   }
 
-  DMat<T> invContactInertia(const int gc_index,
-                            const D6Mat<T>& force_directions);
+  DMat<T> invContactInertia(const int gc_index, const D6Mat<T>& force_directions);
   T invContactInertia(const int gc_index, const Vec3<T>& force_ics_at_contact);
 
-  T applyTestForce(const int gc_index, const Vec3<T>& force_ics_at_contact,
-                   FBModelStateDerivative<T>& dstate_out);
+  T applyTestForce(const int gc_index, const Vec3<T>& force_ics_at_contact,FBModelStateDerivative<T>& dstate_out);
 
-  T applyTestForce(const int gc_index, const Vec3<T>& force_ics_at_contact,
-                   DVec<T>& dstate_out);
+  T applyTestForce(const int gc_index, const Vec3<T>& force_ics_at_contact,DVec<T>& dstate_out);
 
   void addDynamicsVars(int count);
 
@@ -216,8 +211,7 @@ class FloatingBaseModel {
   vector<JointType> _jointTypes;
   vector<CoordinateAxis> _jointAxes;
   vector<Mat6<T>, Eigen::aligned_allocator<Mat6<T>>> _Xtree, _Xrot;
-  vector<SpatialInertia<T>, Eigen::aligned_allocator<SpatialInertia<T>>> _Ibody,
-      _Irot;
+  vector<SpatialInertia<T>, Eigen::aligned_allocator<SpatialInertia<T>>> _Ibody,_Irot;
   vector<std::string> _bodyNames;
 
   size_t _nGroundContact = 0;
@@ -250,8 +244,7 @@ class FloatingBaseModel {
   FBModelState<T> _state;
   FBModelStateDerivative<T> _dState;
 
-  vectorAligned<SVec<T>> _v, _vrot, _a, _arot, _avp, _avprot, _c, _crot, _S,
-      _Srot, _fvp, _fvprot, _ag, _agrot, _f, _frot;
+  vectorAligned<SVec<T>> _v, _vrot, _a, _arot, _avp, _avprot, _c, _crot, _S, _Srot, _fvp, _fvprot, _ag, _agrot, _f, _frot;
 
   vectorAligned<SVec<T>> _U, _Urot, _Utot, _pA, _pArot;
   vectorAligned<SVec<T>> _externalForces;
