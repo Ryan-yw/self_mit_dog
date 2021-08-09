@@ -4,7 +4,7 @@
 /*!
  *  斜坡估计
  */
-void Slope::computeSlope(const Vec3<float>* pFoot, const float yaw)
+void Slope::computeSlope(const Vec3<float>* pFoot, const float theta)
 {
     //斜坡角度估计
     W << 1,pFoot[0][0], pFoot[0][1],
@@ -18,32 +18,31 @@ void Slope::computeSlope(const Vec3<float>* pFoot, const float yaw)
     W_t = W.transpose();
     m = W_t * W;
     a =  m.inverse() * W_t * z;
-    angle = std::abs(std::atan(a[1])); 
+    alpha = std::abs(std::atan(a[1])); 
 
     //roll pitch 角度补偿
-    pitch = std::abs(std::atan(std::tan(angle) * std::cos(yaw)));
-    if(yaw >= (-M_PI + roll_offset) && yaw < (M_PI - roll_offset))
+    pitch = std::abs(std::atan(std::tan(alpha) * std::cos(theta)));
+    if(theta >= (-M_PI + roll_offset) && theta < (M_PI - roll_offset))
     {
-        roll = std::asin((std::sin(angle)-std::sin(std::abs(pitch))*std::cos(std::abs(yaw)))/(std::sin(std::abs(yaw))));
-        pre_roll = 0;
+        roll = std::asin((std::sin(alpha)-std::sin(std::abs(pitch))*std::cos(std::abs(theta)))/(std::sin(std::abs(theta))));
     }   
  
-    if(yaw >= -M_PI_2 && yaw < 0) 
+    if(theta >= -M_PI_2 && theta < 0) 
     {
         pitch = -1 * pitch;
         roll = roll;
     }
-    else if(yaw >= 0 && yaw <M_PI_2)
+    else if(theta >= 0 && theta <M_PI_2)
     {
         pitch = -1 * pitch;
         roll = -1 * roll;
     }
-    else if(yaw >= M_PI_2 && yaw < (M_PI - roll_offset))
+    else if(theta >= M_PI_2 && theta < (M_PI - roll_offset))
     {
         pitch = 1 * pitch;
         roll = -1 * roll;
     }
-    else if (yaw >= (-M_PI + roll_offset) && yaw < -M_PI_2)
+    else if (theta >= (-M_PI + roll_offset) && theta < -M_PI_2)
     {
         pitch = 1 * pitch;
         roll =  roll;
@@ -55,9 +54,9 @@ void Slope::computeSlope(const Vec3<float>* pFoot, const float yaw)
     }
 
 
-    //roll = std::asin((std::sin(angle)-std::sin(pitch)*std::cos(yaw))/std::sin(yaw));
+    //roll = std::asin((std::sin(alpha)-std::sin(pitch)*std::cos(theta))/std::sin(theta));
     
-    std::cout << "测试" << std::sin(std::abs(yaw)) << std::endl;    
+    //std::cout << "测试" << std::sin(std::abs(theta)) << std::endl;    
     // std::cout << -1*a << std::endl; 
     // std::cout << "pitch=" << pitch <<std::endl; 
     // std::cout << pitch << std::endl;    

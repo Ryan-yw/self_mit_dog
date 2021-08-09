@@ -476,7 +476,7 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   aBody_des.setZero();
 
   slope_angle.computeSlope(pFoot,_yaw_des);
-  pBody_RPY_des[0] = slope_angle.roll;
+  pBody_RPY_des[0] = 0;
   pBody_RPY_des[1] = slope_angle.pitch;
   pBody_RPY_des[2] = _yaw_des;
 
@@ -487,7 +487,7 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   //std::cout << "身体参数" << std::endl; 
   // std::cout << "身体位置" << pBody_des[0] << " " << pBody_des[1] << " " << pBody_des[2] << std::endl; 
   // std::cout << "身体速度" << vBody_des[0] << " " << vBody_des[1] << " " << vBody_des[2] << std::endl; 
-  std::cout << "身体角度" << pBody_RPY_des[0] << " " << pBody_RPY_des[1] << " " << pBody_RPY_des[2] << std::endl; 
+  //std::cout << "身体角度" << pBody_RPY_des[0] << " " << pBody_RPY_des[1] << " " << pBody_RPY_des[2] << std::endl; 
   // std::cout << "身体角速度" << vBody_Ori_des[0] << " " << vBody_Ori_des[1] << " " << vBody_Ori_des[2] << std::endl; 
   // std::cout << std::endl; 
   contact_state = gait->getContactState();

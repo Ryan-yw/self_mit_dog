@@ -60,3 +60,20 @@ find_package(Qt5Gui CONFIG REQUIRED)
 8. Regularized Predictive Control Framework for Robust Dynamic Legged Locomotion
 9. Optimized Jumping on the MIT Cheetah 3 Robot
 10. Dynamic Locomotion in the MIT Cheetah 3 Through Convex Model-Predictive Control
+
+# 斜坡估计
+p_z = [1 p_x p_y] * a
+
+p = [p_x p_y p_z]为足在地面坐标系下的表达
+a 为估计出的斜坡的平面方程参数
+
+## roll & pitch 补偿 
+## 下面的角只考虑大小
+当斜面在正方向时
+alpha 为斜坡倾角
+theta 为机器人偏航角
+lambda 为机器人朝向与地面倾角            pitch补偿角
+gama 为斜面上机器人朝向线的垂线与地面夹角   roll补偿角
+
+tan(lambda) = tan(alpha) * cos(theta)
+sin(gama) = (sin(alpha) - sin(lambda) * cos(theta))/sin(theta)
